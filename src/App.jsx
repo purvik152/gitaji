@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 const CHARACTERS = {
   KRISHNA: { name: "Shree Krishna", image: "/assets/krishna.png" },
@@ -277,8 +277,23 @@ function App() {
                           : language === LANGUAGES.GUJARATI ? 'અનુવાદ. ' : 'अनुवाद। ';
         const meaningLabel = language === LANGUAGES.ENGLISH  ? 'Meaning. '
                            : language === LANGUAGES.GUJARATI ? 'અર્થ. ' : 'अर्थ। ';
-        if (t) queue.push(makeU(addPauses(transLabel  + t), ttsLang, true));
-        if (m) queue.push(makeU(addPauses(meaningLabel + m), ttsLang, true));
+                           
+        // Mobile TTS limits: Long speeches (meaning) get cancelled by OS after ~10 seconds.
+        // Fix: Chunk text into smaller sentences and enqueue sequentially.
+        const chunkText = (text) => {
+           if (!text) return [];
+           const splitText = text.replace(/([.!?।॥]+)/g, '$1|~|');
+           return splitText.split('|~|').map(p => p.trim()).filter(p => p.length > 0);
+        };
+
+        if (t) {
+          queue.push(makeU(transLabel, ttsLang, true));
+          chunkText(t).forEach(chunk => queue.push(makeU(addPauses(chunk), ttsLang, true)));
+        }
+        if (m) {
+          queue.push(makeU(meaningLabel, ttsLang, true));
+          chunkText(m).forEach(chunk => queue.push(makeU(addPauses(chunk), ttsLang, true)));
+        }
       }
       if (!queue.length) {
         if (sleepModeRef.current) { _finalizeAll(true); shouldAutoPlayRef.current = true; handleNext(); }
