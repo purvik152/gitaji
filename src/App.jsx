@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 
 const CHARACTERS = {
-  KRISHNA: { name: "Shree Krishna", image: "/assets/krishna.png" },
-  ARJUNA: { name: "Arjuna", image: "/assets/arjuna.png" },
-  SANJAYA: { name: "Sanjaya", image: "/assets/background.png" },
-  DHRITARASHTRA: { name: "Dhritarashtra", image: "/assets/background.png" }
+  KRISHNA: { name: "Shree Krishna", image: "/assets/krishna_portrait.png" },
+  ARJUNA: { name: "Arjuna", image: "/assets/arjuna_portrait.png" },
+  SANJAYA: { name: "Sanjaya", image: "/assets/sanjaya_portrait.png" },
+  DHRITARASHTRA: { name: "Dhritarashtra", image: "/assets/dhritarashtra_portrait.png" }
 };
 
 const LANGUAGES = {
@@ -44,8 +44,92 @@ const CHAPTER_NAMES = [
   "Daivasura Sampad Vibhaga Yoga", "Shraddhatraya Vibhaga Yoga", "Moksha Sanyasa Yoga"
 ];
 
+const GITA_CHARACTERS_INFO = [
+  {
+    id: 'krishna',
+    name: 'Shree Krishna',
+    role: 'The Supreme Divine Charioteer',
+    image: '/assets/krishna_portrait.png',
+    description: 'The Supreme Personality of Godhead, serving as Arjuna\'s charioteer. He delivers the timeless wisdom of the Bhagavad Gita, guiding Arjuna and all of humanity from the darkness of ignorance to the light of ultimate truth.',
+    spiritualSignificance: 'Represents the Supreme Self (Paramatma), the ultimate truth, and the guiding inner voice of wisdom that leads one towards liberation (Moksha) when surrendered unto.',
+    traits: ['Omniscience', 'Infinite Compassion', 'Supreme Detachment', 'Divine Guide associated with Dharma'],
+    chapter: 'Prominent throughout, revealing Universal Form in Chapter 11'
+  },
+  {
+    id: 'arjuna',
+    name: 'Arjuna',
+    role: 'The Peerless Archer',
+    image: '/assets/arjuna_portrait.png',
+    description: 'The greatest bowman of his time and close friend of Lord Krishna. Overwhelmed by grief and moral dilemma on the battlefield, he seeks Krishna\'s guidance, becoming the recipient of the Gita\'s profound spiritual knowledge.',
+    spiritualSignificance: 'Represents the individual soul (Jivatma) encumbered by worldly attachments, confusion, and moral dilemmas, seeking the ultimate truth and divine guidance.',
+    traits: ['Unwavering Devotion', 'Supreme Focus', 'Sincere Seeker of Truth', 'Prowess bound by Duty'],
+    chapter: 'Chapter 1 (Arjuna Vishada Yoga) details his grief; receives knowledge throughout.'
+  },
+  {
+    id: 'dhritarashtra',
+    name: 'Dhritarashtra',
+    role: 'The Blind King',
+    image: '/assets/dhritarashtra_portrait.png',
+    description: 'The physically and spiritually blind father of the Kauravas. His material attachment and inability to control his ambitious son Duryodhana led to the devastating Kurukshetra war.',
+    spiritualSignificance: 'Symbolizes the mind blinded by ego, material attachment, and nepotism, which fails to see the truth or act righteously despite knowing what is right.',
+    traits: ['Blind Material Attachment', 'Willful Ignorance', 'Fearful and Anxious', 'Nepotism'],
+    chapter: 'Speaks only the very first verse (1.1) of the Bhagavad Gita'
+  },
+  {
+    id: 'sanjaya',
+    name: 'Sanjaya',
+    role: 'The Mystic Visionary Narrator',
+    image: '/assets/sanjaya_portrait.png',
+    description: 'The trusted advisor to King Dhritarashtra. Blessed by Sage Vyasa with divine vision (Divya Drishti), Sanjaya perceives the events of the Kurukshetra war in real-time and narrates the Bhagavad Gita to the blind king.',
+    spiritualSignificance: 'Represents introspection, impartial observation, and the clarity of a pure mind capable of witnessing the divine interplay without attachment.',
+    traits: ['Impartial Witness', 'Truthful Reporter', 'Endowed with Divine Vision', 'Devoted to Dharma'],
+    chapter: 'Narrates the entire dialogue to Dhritarashtra.'
+  },
+  {
+    id: 'bhishma',
+    name: 'Bhishma Pitamah',
+    role: 'The Formidable Grandsire',
+    image: '/assets/bhishma_portrait.png',
+    description: 'The grand patriarch of the Kuru dynasty. Bound by his terrible oath of celibacy and loyalty to the throne of Hastinapura, he fights for the Kauravas despite his deep affection and spiritual alignment with the Pandavas.',
+    spiritualSignificance: 'Embodies the conflict between ultimate truth (Dharma) and rigid personal vows, illustrating the paradox of righteousness trapped by historical karma.',
+    traits: ['Terrible Vow (Bhishma Pratigya)', 'Unmatched Valor', 'Tragic Loyalty', 'Master of Dharma'],
+    chapter: 'Mentioned primarily in Chapter 1 regarding military formation.'
+  },
+  {
+    id: 'dronacharya',
+    name: 'Dronacharya',
+    role: 'The Guru of Weapons',
+    image: '/assets/dronacharya_portrait.png',
+    description: 'The venerable royal preceptor who taught martial arts and divine weaponry to both the Pandavas and the Kauravas. Although a Brahmin sage, he fulfills his duty by commanding the Kaurava forces.',
+    spiritualSignificance: 'Represents conventional knowledge, past conditioning, and attachments to the fruits of one\'s actions, which must often be transcended on the spiritual path.',
+    traits: ['Mastery of Systems', 'Attachment to Disciples', 'Indebtedness to the Crown', 'Traditional Wisdom'],
+    chapter: 'Addressed in Chapter 1 by Duryodhana.'
+  },
+  {
+    id: 'karna',
+    name: 'Karna',
+    role: 'The Tragic Hero of Sun',
+    image: '/assets/karna_portrait.png',
+    description: 'A formidable warrior of unmatched generosity and the secret eldest brother of the Pandavas. Driven by loyalty to Duryodhana, who befriended him when rejected by society, Karna tragically fights against his own brothers.',
+    spiritualSignificance: 'Symbolizes the powerful but misguided pursuit of honor driven by ego, and the tragic consequences of aligning with Adharma due to past slights and misdirected loyalty.',
+    traits: ['Unmatched Generosity (Daanveer)', 'Fierce Loyalty', 'Deep Seated Insecurity', 'Cursed Brilliance'],
+    chapter: 'Listed among mighty warriors in Chapter 1.'
+  },
+  {
+    id: 'duryodhana',
+    name: 'Prince Duryodhana',
+    role: 'The Ambitious Antagonist',
+    image: '/assets/duryodhana_portrait.png',
+    description: 'The eldest Kaurava prince, driven by intense jealousy, entitlement, and greed. His refusal to yield even a needle-point of land to the Pandavas made the catastrophic war of Mahabharata inevitable.',
+    spiritualSignificance: 'Personifies Adharma, the ego fully consumed by greed, the lower worldly desires, and the destructive potential of an uncontrolled mind.',
+    traits: ['Material Entitlement', 'Uncontrolled Greed', 'Arrogance', 'Jealous Demonic Nature'],
+    chapter: 'Speaks in Chapter 1, assessing the armies.'
+  }
+];
+
 function App() {
-  const [view, setView] = useState('cover'); // 'cover' | 'preface' | 'index' | 'verse'
+  const [view, setView] = useState('cover'); // 'cover' | 'preface' | 'index' | 'characters' | 'verse'
+  const [selectedCharacter, setSelectedCharacter] = useState(GITA_CHARACTERS_INFO[0]);
   const [chapter, setChapter] = useState(1);
   const [verse, setVerse] = useState(1);
   const [data, setData] = useState(null);
@@ -230,89 +314,134 @@ function App() {
     setIsSpeaking(true); setIsPaused(false);
     if (bgAudioRef.current) bgAudioRef.current.play().catch(() => {});
 
-    setTimeout(() => {
-      if (audioState.current.mode !== 'playing') return;
-      const startTTS = () => {
-        if (bgAudioRef.current) bgAudioRef.current.volume = 0.1;
-        const ttsLang = language === LANGUAGES.ENGLISH ? 'en-GB' : language === LANGUAGES.GUJARATI ? 'gu-IN' : 'hi-IN';
-        const queue = [];
-        if (language !== LANGUAGES.SANSKRIT) {
-          let t = '', m = '';
-          if (language === LANGUAGES.ENGLISH) { t = data.english; m = data.english_meaning; }
-          else if (language === LANGUAGES.HINDI) { t = data.hindi; m = data.hindi_meaning; }
-          else if (language === LANGUAGES.GUJARATI) { t = gujaratiObj?.translation; m = gujaratiObj?.meaning; }
-          
-          const transLabel = language === LANGUAGES.ENGLISH ? 'Translation. ' : language === LANGUAGES.GUJARATI ? 'અનુવાદ. ' : 'अनुवाद। ';
-          const meaningLabel = language === LANGUAGES.ENGLISH ? 'Meaning. ' : language === LANGUAGES.GUJARATI ? 'અર્થ. ' : 'अर्थ। ';
-          const addPauses = txt => txt.replace(/\?/g, ' ').replace(/।/g, '। ,').replace(/॥/g, '॥ .').replace(/([.!])/g, '$1 ,').replace(/([,;])/g, '$1 ').replace(/[।॥]/g, ' '); 
-          if (t) queue.push(makeU(addPauses(transLabel + t), ttsLang, true));
-          if (m) queue.push(makeU(addPauses(meaningLabel + m), ttsLang, true));
-        }
-        if (!queue.length) { 
-          if (sleepModeRef.current) { _finalizeAll(true); shouldAutoPlayRef.current = true; handleNext(); }
-          else _finalizeAll();
-          return; 
-        }
-        state.utterances = queue;
-        queue.forEach((u, i) => {
-          if (i === queue.length - 1) {
-            u.onend = () => {
-              if (audioState.current.mode !== 'idle') {
-                if (sleepModeRef.current) { _finalizeAll(true); shouldAutoPlayRef.current = true; handleNext(); }
-                else _finalizeAll(false);
-              }
-            };
-          }
-          window.speechSynthesis.speak(u);
-        });
-      };
-      // Helper to make a shloka utterance with the cached consistent voice
-      const makeShlokaU = (text) => {
-        const u = new SpeechSynthesisUtterance(text);
-        u.lang = 'hi-IN';
-        u.volume = 1.0;
-        u.pitch = 0.75; // Deep, sacred tone
-        u.rate = 0.78;  // Slow, deliberate chanting pace
-        if (shlokaVoiceRef.current) u.voice = shlokaVoiceRef.current;
-        return u;
-      };
+    // ── MOBILE FIX #1: Unlock speechSynthesis within this user-gesture ──────
+    // iOS Safari & Android Chrome block speechSynthesis.speak() unless it is
+    // called (even once) synchronously from a user-interaction handler.
+    // Speaking a zero-volume, zero-length utterance here "unlocks" the engine
+    // so that the real utterances queued later (from audio.onended) will work.
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+                  (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    try {
+      const unlock = new SpeechSynthesisUtterance('\u200B');
+      unlock.volume = 0;
+      unlock.rate = 16;
+      window.speechSynthesis.speak(unlock);
+    } catch (_) {}
 
-      if (data.audio_link) {
-        if (bgAudioRef.current) bgAudioRef.current.volume = 0.05;
-        const audio = new Audio(data.audio_link);
-        audio.volume = 1.0;
-        state.shlokaAudio = audio;
-        audio.onended = () => { if (state.mode === 'playing') { state.shlokaAudio = null; startTTS(); } };
+    // Helper — shloka voice (deep, chanting pace)
+    const makeShlokaU = (text) => {
+      const u = new SpeechSynthesisUtterance(text);
+      u.lang = 'hi-IN';
+      u.volume = 1.0;
+      u.pitch = 0.75;
+      u.rate = 0.78;
+      if (shlokaVoiceRef.current) u.voice = shlokaVoiceRef.current;
+      return u;
+    };
 
-        // Guard: onerror and play().catch() can BOTH fire when MP3 fails.
-        // Use a run-once flag so TTS is only queued exactly once.
-        let shlokaFailed = false;
-        const onFail = () => {
-          if (shlokaFailed) return;
-          shlokaFailed = true;
-          state.shlokaAudio = null;
-          if (bgAudioRef.current) bgAudioRef.current.volume = 0.05;
-          const u = makeShlokaU(data.slok.replace(/।/g, ',').replace(/॥/g, '.'));
-          u.onend = startTTS;
-          window.speechSynthesis.speak(u);
+    const addPauses = txt =>
+      txt.replace(/\?/g, ' ')
+         .replace(/।/g, '। ,').replace(/॥/g, '॥ .')
+         .replace(/([.!])/g, '$1 ,').replace(/([,;])/g, '$1 ')
+         .replace(/[।॥]/g, ' ');
+
+    // ── startTTS: queues translation + meaning utterances ───────────────────
+    const startTTS = () => {
+      if (bgAudioRef.current) bgAudioRef.current.volume = 0.1;
+      const ttsLang = language === LANGUAGES.ENGLISH ? 'en-GB'
+                    : language === LANGUAGES.GUJARATI ? 'gu-IN' : 'hi-IN';
+      const queue = [];
+      if (language !== LANGUAGES.SANSKRIT) {
+        let t = '', m = '';
+        if (language === LANGUAGES.ENGLISH)  { t = data.english;              m = data.english_meaning; }
+        else if (language === LANGUAGES.HINDI)    { t = data.hindi;                m = data.hindi_meaning; }
+        else if (language === LANGUAGES.GUJARATI) { t = gujaratiObj?.translation; m = gujaratiObj?.meaning; }
+
+        const transLabel  = language === LANGUAGES.ENGLISH  ? 'Translation. '
+                          : language === LANGUAGES.GUJARATI ? 'અનુવાદ. ' : 'अनुवाद। ';
+        const meaningLabel = language === LANGUAGES.ENGLISH  ? 'Meaning. '
+                           : language === LANGUAGES.GUJARATI ? 'અર્થ. ' : 'अर्थ। ';
+                           
+        // Mobile TTS limits: Long speeches (meaning) get cancelled by OS after ~10 seconds.
+        // Fix: Chunk text into smaller sentences and enqueue sequentially.
+        const chunkText = (text) => {
+           if (!text) return [];
+           const splitText = text.replace(/([.!?।॥]+)/g, '$1|~|');
+           return splitText.split('|~|').map(p => p.trim()).filter(p => p.length > 0);
         };
-        audio.onerror = onFail;
-        audio.play().catch(onFail);
-      } else {
-         if (bgAudioRef.current) bgAudioRef.current.volume = 0.05;
-         const u = makeShlokaU(data.slok.replace(/।/g, ',').replace(/॥/g, '.'));
-         u.onend = startTTS; window.speechSynthesis.speak(u);
-      }
-      // Chrome keep-alive: clear any previous interval first, then start a new one
-      if (keepAliveRef.current) clearInterval(keepAliveRef.current);
-      keepAliveRef.current = setInterval(() => {
-        if (audioState.current.mode === 'playing' && window.speechSynthesis.speaking) {
-          window.speechSynthesis.pause(); window.speechSynthesis.resume();
-        } else if (audioState.current.mode !== 'playing') {
-          clearInterval(keepAliveRef.current); keepAliveRef.current = null;
+
+        if (t) {
+          queue.push(makeU(transLabel, ttsLang, true));
+          chunkText(t).forEach(chunk => queue.push(makeU(addPauses(chunk), ttsLang, true)));
         }
-      }, 10000);
-    }, 100);
+        if (m) {
+          queue.push(makeU(meaningLabel, ttsLang, true));
+          chunkText(m).forEach(chunk => queue.push(makeU(addPauses(chunk), ttsLang, true)));
+        }
+      }
+      if (!queue.length) {
+        if (sleepModeRef.current) { _finalizeAll(true); shouldAutoPlayRef.current = true; handleNext(); }
+        else _finalizeAll();
+        return;
+      }
+      state.utterances = queue;
+      queue.forEach((u, i) => {
+        if (i === queue.length - 1) {
+          u.onend = () => {
+            if (audioState.current.mode !== 'idle') {
+              if (sleepModeRef.current) { _finalizeAll(true); shouldAutoPlayRef.current = true; handleNext(); }
+              else _finalizeAll(false);
+            }
+          };
+        }
+        window.speechSynthesis.speak(u);
+      });
+
+      // ── MOBILE FIX #2: Skip keep-alive on iOS ──────────────────────────
+      // iOS speechSynthesis.pause() → resume() cancels the utterance (Apple bug).
+      // The keep-alive interval is only safe on desktop Chrome / Android.
+      if (!isIOS) {
+        if (keepAliveRef.current) clearInterval(keepAliveRef.current);
+        keepAliveRef.current = setInterval(() => {
+          if (audioState.current.mode === 'playing' && window.speechSynthesis.speaking) {
+            window.speechSynthesis.pause();
+            window.speechSynthesis.resume();
+          } else if (audioState.current.mode !== 'playing') {
+            clearInterval(keepAliveRef.current);
+            keepAliveRef.current = null;
+          }
+        }, 10000);
+      }
+    };
+
+    // ── MOBILE FIX #3: No setTimeout — execute immediately (stay in gesture) ─
+    // Wrapping in setTimeout(fn, 100) breaks the gesture chain on mobile and
+    // causes speechSynthesis.speak() called later to be silently ignored.
+    if (bgAudioRef.current) bgAudioRef.current.volume = 0.05;
+
+    if (data.audio_link) {
+      const audio = new Audio(data.audio_link);
+      audio.volume = 1.0;
+      state.shlokaAudio = audio;
+      audio.onended = () => { if (state.mode === 'playing') { state.shlokaAudio = null; startTTS(); } };
+
+      let shlokaFailed = false;
+      const onFail = () => {
+        if (shlokaFailed) return;
+        shlokaFailed = true;
+        state.shlokaAudio = null;
+        if (bgAudioRef.current) bgAudioRef.current.volume = 0.05;
+        const u = makeShlokaU(data.slok.replace(/।/g, ',').replace(/॥/g, '.'));
+        u.onend = startTTS;
+        window.speechSynthesis.speak(u);
+      };
+      audio.onerror = onFail;
+      audio.play().catch(onFail);
+    } else {
+      const u = makeShlokaU(data.slok.replace(/।/g, ',').replace(/॥/g, '.'));
+      u.onend = startTTS;
+      window.speechSynthesis.speak(u);
+    }
   };
 
   // Plays the page-flip animation then executes the navigation callback
@@ -425,12 +554,20 @@ function App() {
           <span>Sage Vedvyas</span>
         </div>
 
-        {/* CTA Button */}
-        <button className="cover-open-btn" onClick={openBook} id="open-divine-book-btn">
-          <span className="btn-glow" />
-          <span className="btn-icon">📖</span>
-          <span>Open the Divine Book</span>
-        </button>
+        {/* CTA Buttons */}
+        <div style={{ display: 'flex', gap: '15px', flexDirection: 'column', alignItems: 'center' }}>
+          <button className="cover-open-btn" onClick={openBook} id="open-divine-book-btn">
+            <span className="btn-glow" />
+            <span className="btn-icon">📖</span>
+            <span>Open the Divine Book</span>
+          </button>
+          
+          <button className="cover-open-btn" onClick={() => { navigate(() => setView('characters')); if (bgAudioRef.current) bgAudioRef.current.play().catch(() => {}); }} style={{ background: 'linear-gradient(135deg, #1f1209, #3a2211, #1f1209)', padding: '12px 30px', fontSize: '0.9rem', color: '#d4af37', border: '1px solid #d4af37' }}>
+            <span className="btn-glow" />
+            <span className="btn-icon">🏹</span>
+            <span>Meet the Characters</span>
+          </button>
+        </div>
 
         {/* Bottom Sanskrit quote */}
         <p className="cover-quote">
@@ -478,8 +615,71 @@ function App() {
             </div>
           ))}
         </div>
-        <div className="book-controls">
+        <div className="book-controls" style={{ justifyContent: 'center', gap: '20px' }}>
            <button className="ornate-btn secondary-btn" onClick={() => navigate(() => setView('preface'))}>Back</button>
+           <button className="ornate-btn" onClick={() => navigate(() => setView('characters'))}>Meet Characters</button>
+        </div>
+      </div>
+    </div>
+  );
+
+  if (view === 'characters') return (
+    <div className="app-container">
+      <div ref={pageRef} className="book-wrapper parchment-page" style={{ padding: '30px', maxWidth: '1300px' }}>
+        <h2 className="book-title" style={{ fontSize: '3rem', textAlign: 'center', marginBottom: '10px' }}>Dramatis Personae</h2>
+        <p style={{ textAlign: 'center', fontFamily: 'Spectral', fontStyle: 'italic', color: '#5d2e0a', marginBottom: '30px', fontSize: '1.2rem' }}>The principal figures of the great epic Mahabharata</p>
+        
+        <div className="characters-master-detail-view">
+          <div className="characters-sidebar">
+            {GITA_CHARACTERS_INFO.map((char) => (
+              <div 
+                key={char.id} 
+                className={`character-sidebar-item ${selectedCharacter.id === char.id ? 'active' : ''}`}
+                onClick={() => setSelectedCharacter(char)}
+              >
+                <img src={char.image} alt={char.name} className="sidebar-avatar" />
+                <span className="sidebar-name">{char.name}</span>
+              </div>
+            ))}
+          </div>
+          
+          <div className="character-detail-area" key={selectedCharacter.id}>
+            <div className="character-detail-portrait-wrapper">
+              <img src={selectedCharacter.image} alt={selectedCharacter.name} className="character-detail-portrait" />
+              <div className="character-detail-gradient"></div>
+            </div>
+            
+            <div className="character-detail-content">
+              <h3 className="detail-name">{selectedCharacter.name}</h3>
+              <p className="detail-role">{selectedCharacter.role}</p>
+              
+              <div className="detail-section">
+                <p className="detail-description">{selectedCharacter.description}</p>
+              </div>
+              
+              <div className="detail-section highlight-section">
+                <h4 className="detail-heading">Spiritual Significance</h4>
+                <p className="detail-text">{selectedCharacter.spiritualSignificance}</p>
+              </div>
+              
+              <div className="detail-section flex-section">
+                <div className="traits-box">
+                  <h4 className="detail-heading">Key Attributes</h4>
+                  <ul className="traits-list">
+                    {selectedCharacter.traits.map((trait, i) => <li key={i}>{trait}</li>)}
+                  </ul>
+                </div>
+                <div className="chapter-box">
+                   <h4 className="detail-heading">Gita Presence</h4>
+                   <p className="detail-text">{selectedCharacter.chapter}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div className="book-controls" style={{ justifyContent: 'center', marginTop: '30px' }}>
+           <button className="ornate-btn secondary-btn" onClick={() => navigate(() => setView('index'))}>Back to Index</button>
         </div>
       </div>
     </div>
@@ -519,8 +719,19 @@ function App() {
             </div>
           ) : data ? (
             <>
-              <div className="shloka-main">{data.slok}</div>
-              {data.transliteration && <p style={{ textAlign: 'center', fontStyle: 'italic', opacity: 0.7 }}>{data.transliteration}</p>}
+              <div className={`speaker-shloka-container ${isSpeaking ? 'is-speaking' : ''}`}>
+                {currentSpeaker && (
+                  <div className="speaker-avatar-wrapper">
+                    <div className="speaker-pulse-ring"></div>
+                    <img src={currentSpeaker.image} alt={currentSpeaker.name} className="speaker-avatar-img" />
+                    <div className="speaker-name-badge">{currentSpeaker.name} {isSpeaking && <span className="speaking-indicator"></span>}</div>
+                  </div>
+                )}
+                <div className="shloka-text-wrapper">
+                  <div className="shloka-main">{data.slok}</div>
+                  {data.transliteration && <p style={{ textAlign: 'center', fontStyle: 'italic', opacity: 0.7 }}>{data.transliteration}</p>}
+                </div>
+              </div>
               <div className="translation-box">
                 <h4>Translation ({language})</h4>
                 <p className="translation-text">
