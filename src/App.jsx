@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+﻿import React, { useState, useEffect, useRef } from 'react';
 
 const CHARACTERS = {
   KRISHNA: { name: "Shree Krishna", image: "/assets/krishna.png" },
@@ -230,89 +230,119 @@ function App() {
     setIsSpeaking(true); setIsPaused(false);
     if (bgAudioRef.current) bgAudioRef.current.play().catch(() => {});
 
-    setTimeout(() => {
-      if (audioState.current.mode !== 'playing') return;
-      const startTTS = () => {
-        if (bgAudioRef.current) bgAudioRef.current.volume = 0.1;
-        const ttsLang = language === LANGUAGES.ENGLISH ? 'en-GB' : language === LANGUAGES.GUJARATI ? 'gu-IN' : 'hi-IN';
-        const queue = [];
-        if (language !== LANGUAGES.SANSKRIT) {
-          let t = '', m = '';
-          if (language === LANGUAGES.ENGLISH) { t = data.english; m = data.english_meaning; }
-          else if (language === LANGUAGES.HINDI) { t = data.hindi; m = data.hindi_meaning; }
-          else if (language === LANGUAGES.GUJARATI) { t = gujaratiObj?.translation; m = gujaratiObj?.meaning; }
-          
-          const transLabel = language === LANGUAGES.ENGLISH ? 'Translation. ' : language === LANGUAGES.GUJARATI ? 'અનુવાદ. ' : 'अनुवाद। ';
-          const meaningLabel = language === LANGUAGES.ENGLISH ? 'Meaning. ' : language === LANGUAGES.GUJARATI ? 'અર્થ. ' : 'अर्थ। ';
-          const addPauses = txt => txt.replace(/\?/g, ' ').replace(/।/g, '। ,').replace(/॥/g, '॥ .').replace(/([.!])/g, '$1 ,').replace(/([,;])/g, '$1 ').replace(/[।॥]/g, ' '); 
-          if (t) queue.push(makeU(addPauses(transLabel + t), ttsLang, true));
-          if (m) queue.push(makeU(addPauses(meaningLabel + m), ttsLang, true));
-        }
-        if (!queue.length) { 
-          if (sleepModeRef.current) { _finalizeAll(true); shouldAutoPlayRef.current = true; handleNext(); }
-          else _finalizeAll();
-          return; 
-        }
-        state.utterances = queue;
-        queue.forEach((u, i) => {
-          if (i === queue.length - 1) {
-            u.onend = () => {
-              if (audioState.current.mode !== 'idle') {
-                if (sleepModeRef.current) { _finalizeAll(true); shouldAutoPlayRef.current = true; handleNext(); }
-                else _finalizeAll(false);
-              }
-            };
-          }
-          window.speechSynthesis.speak(u);
-        });
-      };
-      // Helper to make a shloka utterance with the cached consistent voice
-      const makeShlokaU = (text) => {
-        const u = new SpeechSynthesisUtterance(text);
-        u.lang = 'hi-IN';
-        u.volume = 1.0;
-        u.pitch = 0.75; // Deep, sacred tone
-        u.rate = 0.78;  // Slow, deliberate chanting pace
-        if (shlokaVoiceRef.current) u.voice = shlokaVoiceRef.current;
-        return u;
-      };
+    // ── MOBILE FIX #1: Unlock speechSynthesis within this user-gesture ──────
+    // iOS Safari & Android Chrome block speechSynthesis.speak() unless it is
+    // called (even once) synchronously from a user-interaction handler.
+    // Speaking a zero-volume, zero-length utterance here "unlocks" the engine
+    // so that the real utterances queued later (from audio.onended) will work.
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+                  (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    try {
+      const unlock = new SpeechSynthesisUtterance('\u200B');
+      unlock.volume = 0;
+      unlock.rate = 16;
+      window.speechSynthesis.speak(unlock);
+    } catch (_) {}
 
-      if (data.audio_link) {
-        if (bgAudioRef.current) bgAudioRef.current.volume = 0.05;
-        const audio = new Audio(data.audio_link);
-        audio.volume = 1.0;
-        state.shlokaAudio = audio;
-        audio.onended = () => { if (state.mode === 'playing') { state.shlokaAudio = null; startTTS(); } };
+    // Helper — shloka voice (deep, chanting pace)
+    const makeShlokaU = (text) => {
+      const u = new SpeechSynthesisUtterance(text);
+      u.lang = 'hi-IN';
+      u.volume = 1.0;
+      u.pitch = 0.75;
+      u.rate = 0.78;
+      if (shlokaVoiceRef.current) u.voice = shlokaVoiceRef.current;
+      return u;
+    };
 
-        // Guard: onerror and play().catch() can BOTH fire when MP3 fails.
-        // Use a run-once flag so TTS is only queued exactly once.
-        let shlokaFailed = false;
-        const onFail = () => {
-          if (shlokaFailed) return;
-          shlokaFailed = true;
-          state.shlokaAudio = null;
-          if (bgAudioRef.current) bgAudioRef.current.volume = 0.05;
-          const u = makeShlokaU(data.slok.replace(/।/g, ',').replace(/॥/g, '.'));
-          u.onend = startTTS;
-          window.speechSynthesis.speak(u);
-        };
-        audio.onerror = onFail;
-        audio.play().catch(onFail);
-      } else {
-         if (bgAudioRef.current) bgAudioRef.current.volume = 0.05;
-         const u = makeShlokaU(data.slok.replace(/।/g, ',').replace(/॥/g, '.'));
-         u.onend = startTTS; window.speechSynthesis.speak(u);
+    const addPauses = txt =>
+      txt.replace(/\?/g, ' ')
+         .replace(/।/g, '। ,').replace(/॥/g, '॥ .')
+         .replace(/([.!])/g, '$1 ,').replace(/([,;])/g, '$1 ')
+         .replace(/[।॥]/g, ' ');
+
+    // ── startTTS: queues translation + meaning utterances ───────────────────
+    const startTTS = () => {
+      if (bgAudioRef.current) bgAudioRef.current.volume = 0.1;
+      const ttsLang = language === LANGUAGES.ENGLISH ? 'en-GB'
+                    : language === LANGUAGES.GUJARATI ? 'gu-IN' : 'hi-IN';
+      const queue = [];
+      if (language !== LANGUAGES.SANSKRIT) {
+        let t = '', m = '';
+        if (language === LANGUAGES.ENGLISH)  { t = data.english;              m = data.english_meaning; }
+        else if (language === LANGUAGES.HINDI)    { t = data.hindi;                m = data.hindi_meaning; }
+        else if (language === LANGUAGES.GUJARATI) { t = gujaratiObj?.translation; m = gujaratiObj?.meaning; }
+
+        const transLabel  = language === LANGUAGES.ENGLISH  ? 'Translation. '
+                          : language === LANGUAGES.GUJARATI ? 'અનુવાદ. ' : 'अनुवाद। ';
+        const meaningLabel = language === LANGUAGES.ENGLISH  ? 'Meaning. '
+                           : language === LANGUAGES.GUJARATI ? 'અર્થ. ' : 'अर्थ। ';
+        if (t) queue.push(makeU(addPauses(transLabel  + t), ttsLang, true));
+        if (m) queue.push(makeU(addPauses(meaningLabel + m), ttsLang, true));
       }
-      // Chrome keep-alive: clear any previous interval first, then start a new one
-      if (keepAliveRef.current) clearInterval(keepAliveRef.current);
-      keepAliveRef.current = setInterval(() => {
-        if (audioState.current.mode === 'playing' && window.speechSynthesis.speaking) {
-          window.speechSynthesis.pause(); window.speechSynthesis.resume();
-        } else if (audioState.current.mode !== 'playing') {
-          clearInterval(keepAliveRef.current); keepAliveRef.current = null;
+      if (!queue.length) {
+        if (sleepModeRef.current) { _finalizeAll(true); shouldAutoPlayRef.current = true; handleNext(); }
+        else _finalizeAll();
+        return;
+      }
+      state.utterances = queue;
+      queue.forEach((u, i) => {
+        if (i === queue.length - 1) {
+          u.onend = () => {
+            if (audioState.current.mode !== 'idle') {
+              if (sleepModeRef.current) { _finalizeAll(true); shouldAutoPlayRef.current = true; handleNext(); }
+              else _finalizeAll(false);
+            }
+          };
         }
-      }, 10000);
-    }, 100);
+        window.speechSynthesis.speak(u);
+      });
+
+      // ── MOBILE FIX #2: Skip keep-alive on iOS ──────────────────────────
+      // iOS speechSynthesis.pause() → resume() cancels the utterance (Apple bug).
+      // The keep-alive interval is only safe on desktop Chrome / Android.
+      if (!isIOS) {
+        if (keepAliveRef.current) clearInterval(keepAliveRef.current);
+        keepAliveRef.current = setInterval(() => {
+          if (audioState.current.mode === 'playing' && window.speechSynthesis.speaking) {
+            window.speechSynthesis.pause();
+            window.speechSynthesis.resume();
+          } else if (audioState.current.mode !== 'playing') {
+            clearInterval(keepAliveRef.current);
+            keepAliveRef.current = null;
+          }
+        }, 10000);
+      }
+    };
+
+    // ── MOBILE FIX #3: No setTimeout — execute immediately (stay in gesture) ─
+    // Wrapping in setTimeout(fn, 100) breaks the gesture chain on mobile and
+    // causes speechSynthesis.speak() called later to be silently ignored.
+    if (bgAudioRef.current) bgAudioRef.current.volume = 0.05;
+
+    if (data.audio_link) {
+      const audio = new Audio(data.audio_link);
+      audio.volume = 1.0;
+      state.shlokaAudio = audio;
+      audio.onended = () => { if (state.mode === 'playing') { state.shlokaAudio = null; startTTS(); } };
+
+      let shlokaFailed = false;
+      const onFail = () => {
+        if (shlokaFailed) return;
+        shlokaFailed = true;
+        state.shlokaAudio = null;
+        if (bgAudioRef.current) bgAudioRef.current.volume = 0.05;
+        const u = makeShlokaU(data.slok.replace(/।/g, ',').replace(/॥/g, '.'));
+        u.onend = startTTS;
+        window.speechSynthesis.speak(u);
+      };
+      audio.onerror = onFail;
+      audio.play().catch(onFail);
+    } else {
+      const u = makeShlokaU(data.slok.replace(/।/g, ',').replace(/॥/g, '.'));
+      u.onend = startTTS;
+      window.speechSynthesis.speak(u);
+    }
   };
 
   // Plays the page-flip animation then executes the navigation callback
