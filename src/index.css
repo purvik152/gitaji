@@ -1064,6 +1064,136 @@ body {
   animation: goldPulse 2s ease-in-out infinite;
 }
 
+/* ══════════════════════════════════════════════════════════════
+   5. CHARACTERS VIEW
+══════════════════════════════════════════════════════════════ */
+.characters-view {
+  padding: 40px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 30px;
+  width: 100%;
+}
+
+.character-card {
+  perspective: 1500px;
+  height: 480px;
+  cursor: pointer;
+  animation: cardReveal 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.character-card:nth-child(1) { animation-delay: 0.1s; }
+.character-card:nth-child(2) { animation-delay: 0.2s; }
+.character-card:nth-child(3) { animation-delay: 0.3s; }
+.character-card:nth-child(4) { animation-delay: 0.4s; }
+.character-card:nth-child(5) { animation-delay: 0.5s; }
+.character-card:nth-child(6) { animation-delay: 0.6s; }
+.character-card:nth-child(7) { animation-delay: 0.7s; }
+.character-card:nth-child(8) { animation-delay: 0.8s; }
+
+.character-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transform-style: preserve-3d;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  border-radius: 8px;
+}
+
+.character-card:hover .character-card-inner {
+  transform: rotateY(180deg);
+}
+
+.character-card-front, .character-card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 2px solid rgba(212,175,55,0.3);
+}
+
+.character-card-front {
+  background-color: var(--ink);
+}
+
+.character-card-front img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s ease;
+}
+
+.character-card:hover .character-card-front img {
+  transform: scale(1.08);
+}
+
+.character-name-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 40px 20px 20px;
+  background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.7) 40%, rgba(0,0,0,0) 100%);
+  color: var(--gold);
+  font-family: 'Cinzel', serif;
+  font-size: 1.8rem;
+  font-weight: 700;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.9);
+}
+
+.character-card-back {
+  background: linear-gradient(135deg, var(--parchment), var(--aged-parchment));
+  color: var(--ink);
+  transform: rotateY(180deg);
+  padding: 30px 25px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  border: 4px solid var(--book-border);
+}
+
+.character-card-back::before {
+  content: '';
+  position: absolute;
+  inset: 6px;
+  border: 1px solid rgba(139, 69, 19, 0.2);
+  pointer-events: none;
+}
+
+.character-back-title {
+  font-family: 'Cinzel', serif;
+  font-size: 1.6rem;
+  color: var(--book-border);
+  margin-bottom: 8px;
+  border-bottom: 1px solid var(--gold);
+  padding-bottom: 5px;
+  text-shadow: 0 1px 1px rgba(212, 175, 55, 0.2);
+}
+
+.character-back-role {
+  font-family: 'Spectral', serif;
+  font-size: 1rem;
+  color: #a0522d;
+  font-style: italic;
+  margin-bottom: 20px;
+  letter-spacing: 0.5px;
+}
+
+.character-back-desc {
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: #3b200e;
+  text-align: justify;
+  text-justify: inter-word;
+}
+
 /* RESPONSIVE */
 @media (max-width: 900px) {
   .app-container { padding: 10px; }
@@ -1074,6 +1204,7 @@ body {
   .shloka-main { font-size: 1.4rem; padding: 20px; }
   .preface-view { padding: 30px 20px; }
   .index-view { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); padding: 20px; gap: 10px; }
+  .characters-view { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); padding: 20px; gap: 20px; }
   .verse-content { padding: 20px; }
   .book-controls { padding: 16px 20px; flex-wrap: wrap; gap: 10px; }
   .lang-selector { position: static; margin-bottom: 15px; justify-content: center; flex-wrap: wrap; }
@@ -1094,8 +1225,13 @@ body {
   .chapter-card { padding: 10px 12px; }
   .chapter-num { font-size: 1rem; }
   .chapter-name { font-size: 0.9rem; }
+  .character-card { height: 380px; }
+  .character-name-overlay { font-size: 1.5rem; padding-top: 30px; }
+  .character-back-title { font-size: 1.3rem; }
+  .character-back-desc { font-size: 0.85rem; }
   .dropdown { font-size: 0.8rem; padding: 6px 10px; }
   .sleep-btn { font-size: 0.7rem; padding: 6px 10px; }
   .preface-verse { margin-bottom: 28px; }
 }
+
 

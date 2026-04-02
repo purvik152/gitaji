@@ -44,8 +44,67 @@ const CHAPTER_NAMES = [
   "Daivasura Sampad Vibhaga Yoga", "Shraddhatraya Vibhaga Yoga", "Moksha Sanyasa Yoga"
 ];
 
+const GITA_CHARACTERS_INFO = [
+  {
+    id: 'krishna',
+    name: 'Shree Krishna',
+    role: 'The Supreme Divine Charioteer',
+    image: '/assets/krishna_portrait.png',
+    description: 'The Supreme Personality of Godhead, serving as Arjuna\'s charioteer. He delivers the timeless wisdom of the Bhagavad Gita, guiding Arjuna and all of humanity from the darkness of ignorance to the light of ultimate truth.'
+  },
+  {
+    id: 'arjuna',
+    name: 'Arjuna',
+    role: 'The Peerless Archer',
+    image: '/assets/arjuna_portrait.png',
+    description: 'The greatest bowman of his time and close friend of Lord Krishna. Overwhelmed by grief and moral dilemma on the battlefield, he seeks Krishna\'s guidance, becoming the recipient of the Gita\'s profound spiritual knowledge.'
+  },
+  {
+    id: 'dhritarashtra',
+    name: 'Dhritarashtra',
+    role: 'The Blind King',
+    image: '/assets/dhritarashtra_portrait.png',
+    description: 'The physically and spiritually blind father of the Kauravas. His material attachment and inability to control his ambitious son Duryodhana led to the devastating Kurukshetra war.'
+  },
+  {
+    id: 'sanjaya',
+    name: 'Sanjaya',
+    role: 'The Mystic Visionary Narrator',
+    image: '/assets/sanjaya_portrait.png',
+    description: 'The trusted advisor to King Dhritarashtra. Blessed by Sage Vyasa with divine vision (Divya Drishti), Sanjaya perceives the events of the Kurukshetra war in real-time and narrates the Bhagavad Gita to the blind king.'
+  },
+  {
+    id: 'bhishma',
+    name: 'Bhishma Pitamah',
+    role: 'The Formidable Grandsire',
+    image: '/assets/bhishma_portrait.png',
+    description: 'The grand patriarch of the Kuru dynasty. Bound by his terrible oath of celibacy and loyalty to the throne of Hastinapura, he fights for the Kauravas despite his deep affection and spiritual alignment with the Pandavas.'
+  },
+  {
+    id: 'dronacharya',
+    name: 'Dronacharya',
+    role: 'The Guru of Weapons',
+    image: '/assets/dronacharya_portrait.png',
+    description: 'The venerable royal preceptor who taught martial arts and divine weaponry to both the Pandavas and the Kauravas. Although a Brahmin sage, he fulfills his duty by commanding the Kaurava forces.'
+  },
+  {
+    id: 'karna',
+    name: 'Karna',
+    role: 'The Tragic Hero of Sun',
+    image: '/assets/karna_portrait.png',
+    description: 'A formidable warrior of unmatched generosity and the secret eldest brother of the Pandavas. Driven by loyalty to Duryodhana, who befriended him when rejected by society, Karna tragically fights against his own brothers.'
+  },
+  {
+    id: 'duryodhana',
+    name: 'Prince Duryodhana',
+    role: 'The Ambitious Antagonist',
+    image: '/assets/duryodhana_portrait.png',
+    description: 'The eldest Kaurava prince, driven by intense jealousy, entitlement, and greed. His refusal to yield even a needle-point of land to the Pandavas made the catastrophic war of Mahabharata inevitable.'
+  }
+];
+
 function App() {
-  const [view, setView] = useState('cover'); // 'cover' | 'preface' | 'index' | 'verse'
+  const [view, setView] = useState('cover'); // 'cover' | 'preface' | 'index' | 'characters' | 'verse'
   const [chapter, setChapter] = useState(1);
   const [verse, setVerse] = useState(1);
   const [data, setData] = useState(null);
@@ -470,12 +529,20 @@ function App() {
           <span>Sage Vedvyas</span>
         </div>
 
-        {/* CTA Button */}
-        <button className="cover-open-btn" onClick={openBook} id="open-divine-book-btn">
-          <span className="btn-glow" />
-          <span className="btn-icon">📖</span>
-          <span>Open the Divine Book</span>
-        </button>
+        {/* CTA Buttons */}
+        <div style={{ display: 'flex', gap: '15px', flexDirection: 'column', alignItems: 'center' }}>
+          <button className="cover-open-btn" onClick={openBook} id="open-divine-book-btn">
+            <span className="btn-glow" />
+            <span className="btn-icon">📖</span>
+            <span>Open the Divine Book</span>
+          </button>
+          
+          <button className="cover-open-btn" onClick={() => { navigate(() => setView('characters')); if (bgAudioRef.current) bgAudioRef.current.play().catch(() => {}); }} style={{ background: 'linear-gradient(135deg, #1f1209, #3a2211, #1f1209)', padding: '12px 30px', fontSize: '0.9rem', color: '#d4af37', border: '1px solid #d4af37' }}>
+            <span className="btn-glow" />
+            <span className="btn-icon">🏹</span>
+            <span>Meet the Characters</span>
+          </button>
+        </div>
 
         {/* Bottom Sanskrit quote */}
         <p className="cover-quote">
@@ -523,8 +590,40 @@ function App() {
             </div>
           ))}
         </div>
-        <div className="book-controls">
+        <div className="book-controls" style={{ justifyContent: 'center', gap: '20px' }}>
            <button className="ornate-btn secondary-btn" onClick={() => navigate(() => setView('preface'))}>Back</button>
+           <button className="ornate-btn" onClick={() => navigate(() => setView('characters'))}>Meet Characters</button>
+        </div>
+      </div>
+    </div>
+  );
+
+  if (view === 'characters') return (
+    <div className="app-container">
+      <div ref={pageRef} className="book-wrapper parchment-page" style={{ padding: '30px', maxWidth: '1300px' }}>
+        <h2 className="book-title" style={{ fontSize: '3rem', textAlign: 'center', marginBottom: '10px' }}>Dramatis Personae</h2>
+        <p style={{ textAlign: 'center', fontFamily: 'Spectral', fontStyle: 'italic', color: '#5d2e0a', marginBottom: '30px', fontSize: '1.2rem' }}>The principal figures of the great epic Mahabharata</p>
+        
+        <div className="characters-view">
+          {GITA_CHARACTERS_INFO.map((char) => (
+            <div key={char.id} className="character-card">
+              <div className="character-card-inner">
+                <div className="character-card-front">
+                  <img src={char.image} alt={char.name} />
+                  <div className="character-name-overlay">{char.name}</div>
+                </div>
+                <div className="character-card-back">
+                  <h3 className="character-back-title">{char.name}</h3>
+                  <p className="character-back-role">{char.role}</p>
+                  <p className="character-back-desc">{char.description}</p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+        
+        <div className="book-controls" style={{ justifyContent: 'center', marginTop: '30px' }}>
+           <button className="ornate-btn secondary-btn" onClick={() => navigate(() => setView('index'))}>Back to Index</button>
         </div>
       </div>
     </div>
