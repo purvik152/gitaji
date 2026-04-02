@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 
 const CHARACTERS = {
-  KRISHNA: { name: "Shree Krishna", image: "/assets/krishna.png" },
-  ARJUNA: { name: "Arjuna", image: "/assets/arjuna.png" },
-  SANJAYA: { name: "Sanjaya", image: "/assets/background.png" },
-  DHRITARASHTRA: { name: "Dhritarashtra", image: "/assets/background.png" }
+  KRISHNA: { name: "Shree Krishna", image: "/assets/krishna_portrait.png" },
+  ARJUNA: { name: "Arjuna", image: "/assets/arjuna_portrait.png" },
+  SANJAYA: { name: "Sanjaya", image: "/assets/sanjaya_portrait.png" },
+  DHRITARASHTRA: { name: "Dhritarashtra", image: "/assets/dhritarashtra_portrait.png" }
 };
 
 const LANGUAGES = {
@@ -50,61 +50,86 @@ const GITA_CHARACTERS_INFO = [
     name: 'Shree Krishna',
     role: 'The Supreme Divine Charioteer',
     image: '/assets/krishna_portrait.png',
-    description: 'The Supreme Personality of Godhead, serving as Arjuna\'s charioteer. He delivers the timeless wisdom of the Bhagavad Gita, guiding Arjuna and all of humanity from the darkness of ignorance to the light of ultimate truth.'
+    description: 'The Supreme Personality of Godhead, serving as Arjuna\'s charioteer. He delivers the timeless wisdom of the Bhagavad Gita, guiding Arjuna and all of humanity from the darkness of ignorance to the light of ultimate truth.',
+    spiritualSignificance: 'Represents the Supreme Self (Paramatma), the ultimate truth, and the guiding inner voice of wisdom that leads one towards liberation (Moksha) when surrendered unto.',
+    traits: ['Omniscience', 'Infinite Compassion', 'Supreme Detachment', 'Divine Guide associated with Dharma'],
+    chapter: 'Prominent throughout, revealing Universal Form in Chapter 11'
   },
   {
     id: 'arjuna',
     name: 'Arjuna',
     role: 'The Peerless Archer',
     image: '/assets/arjuna_portrait.png',
-    description: 'The greatest bowman of his time and close friend of Lord Krishna. Overwhelmed by grief and moral dilemma on the battlefield, he seeks Krishna\'s guidance, becoming the recipient of the Gita\'s profound spiritual knowledge.'
+    description: 'The greatest bowman of his time and close friend of Lord Krishna. Overwhelmed by grief and moral dilemma on the battlefield, he seeks Krishna\'s guidance, becoming the recipient of the Gita\'s profound spiritual knowledge.',
+    spiritualSignificance: 'Represents the individual soul (Jivatma) encumbered by worldly attachments, confusion, and moral dilemmas, seeking the ultimate truth and divine guidance.',
+    traits: ['Unwavering Devotion', 'Supreme Focus', 'Sincere Seeker of Truth', 'Prowess bound by Duty'],
+    chapter: 'Chapter 1 (Arjuna Vishada Yoga) details his grief; receives knowledge throughout.'
   },
   {
     id: 'dhritarashtra',
     name: 'Dhritarashtra',
     role: 'The Blind King',
     image: '/assets/dhritarashtra_portrait.png',
-    description: 'The physically and spiritually blind father of the Kauravas. His material attachment and inability to control his ambitious son Duryodhana led to the devastating Kurukshetra war.'
+    description: 'The physically and spiritually blind father of the Kauravas. His material attachment and inability to control his ambitious son Duryodhana led to the devastating Kurukshetra war.',
+    spiritualSignificance: 'Symbolizes the mind blinded by ego, material attachment, and nepotism, which fails to see the truth or act righteously despite knowing what is right.',
+    traits: ['Blind Material Attachment', 'Willful Ignorance', 'Fearful and Anxious', 'Nepotism'],
+    chapter: 'Speaks only the very first verse (1.1) of the Bhagavad Gita'
   },
   {
     id: 'sanjaya',
     name: 'Sanjaya',
     role: 'The Mystic Visionary Narrator',
     image: '/assets/sanjaya_portrait.png',
-    description: 'The trusted advisor to King Dhritarashtra. Blessed by Sage Vyasa with divine vision (Divya Drishti), Sanjaya perceives the events of the Kurukshetra war in real-time and narrates the Bhagavad Gita to the blind king.'
+    description: 'The trusted advisor to King Dhritarashtra. Blessed by Sage Vyasa with divine vision (Divya Drishti), Sanjaya perceives the events of the Kurukshetra war in real-time and narrates the Bhagavad Gita to the blind king.',
+    spiritualSignificance: 'Represents introspection, impartial observation, and the clarity of a pure mind capable of witnessing the divine interplay without attachment.',
+    traits: ['Impartial Witness', 'Truthful Reporter', 'Endowed with Divine Vision', 'Devoted to Dharma'],
+    chapter: 'Narrates the entire dialogue to Dhritarashtra.'
   },
   {
     id: 'bhishma',
     name: 'Bhishma Pitamah',
     role: 'The Formidable Grandsire',
     image: '/assets/bhishma_portrait.png',
-    description: 'The grand patriarch of the Kuru dynasty. Bound by his terrible oath of celibacy and loyalty to the throne of Hastinapura, he fights for the Kauravas despite his deep affection and spiritual alignment with the Pandavas.'
+    description: 'The grand patriarch of the Kuru dynasty. Bound by his terrible oath of celibacy and loyalty to the throne of Hastinapura, he fights for the Kauravas despite his deep affection and spiritual alignment with the Pandavas.',
+    spiritualSignificance: 'Embodies the conflict between ultimate truth (Dharma) and rigid personal vows, illustrating the paradox of righteousness trapped by historical karma.',
+    traits: ['Terrible Vow (Bhishma Pratigya)', 'Unmatched Valor', 'Tragic Loyalty', 'Master of Dharma'],
+    chapter: 'Mentioned primarily in Chapter 1 regarding military formation.'
   },
   {
     id: 'dronacharya',
     name: 'Dronacharya',
     role: 'The Guru of Weapons',
     image: '/assets/dronacharya_portrait.png',
-    description: 'The venerable royal preceptor who taught martial arts and divine weaponry to both the Pandavas and the Kauravas. Although a Brahmin sage, he fulfills his duty by commanding the Kaurava forces.'
+    description: 'The venerable royal preceptor who taught martial arts and divine weaponry to both the Pandavas and the Kauravas. Although a Brahmin sage, he fulfills his duty by commanding the Kaurava forces.',
+    spiritualSignificance: 'Represents conventional knowledge, past conditioning, and attachments to the fruits of one\'s actions, which must often be transcended on the spiritual path.',
+    traits: ['Mastery of Systems', 'Attachment to Disciples', 'Indebtedness to the Crown', 'Traditional Wisdom'],
+    chapter: 'Addressed in Chapter 1 by Duryodhana.'
   },
   {
     id: 'karna',
     name: 'Karna',
     role: 'The Tragic Hero of Sun',
     image: '/assets/karna_portrait.png',
-    description: 'A formidable warrior of unmatched generosity and the secret eldest brother of the Pandavas. Driven by loyalty to Duryodhana, who befriended him when rejected by society, Karna tragically fights against his own brothers.'
+    description: 'A formidable warrior of unmatched generosity and the secret eldest brother of the Pandavas. Driven by loyalty to Duryodhana, who befriended him when rejected by society, Karna tragically fights against his own brothers.',
+    spiritualSignificance: 'Symbolizes the powerful but misguided pursuit of honor driven by ego, and the tragic consequences of aligning with Adharma due to past slights and misdirected loyalty.',
+    traits: ['Unmatched Generosity (Daanveer)', 'Fierce Loyalty', 'Deep Seated Insecurity', 'Cursed Brilliance'],
+    chapter: 'Listed among mighty warriors in Chapter 1.'
   },
   {
     id: 'duryodhana',
     name: 'Prince Duryodhana',
     role: 'The Ambitious Antagonist',
     image: '/assets/duryodhana_portrait.png',
-    description: 'The eldest Kaurava prince, driven by intense jealousy, entitlement, and greed. His refusal to yield even a needle-point of land to the Pandavas made the catastrophic war of Mahabharata inevitable.'
+    description: 'The eldest Kaurava prince, driven by intense jealousy, entitlement, and greed. His refusal to yield even a needle-point of land to the Pandavas made the catastrophic war of Mahabharata inevitable.',
+    spiritualSignificance: 'Personifies Adharma, the ego fully consumed by greed, the lower worldly desires, and the destructive potential of an uncontrolled mind.',
+    traits: ['Material Entitlement', 'Uncontrolled Greed', 'Arrogance', 'Jealous Demonic Nature'],
+    chapter: 'Speaks in Chapter 1, assessing the armies.'
   }
 ];
 
 function App() {
   const [view, setView] = useState('cover'); // 'cover' | 'preface' | 'index' | 'characters' | 'verse'
+  const [selectedCharacter, setSelectedCharacter] = useState(GITA_CHARACTERS_INFO[0]);
   const [chapter, setChapter] = useState(1);
   const [verse, setVerse] = useState(1);
   const [data, setData] = useState(null);
@@ -604,22 +629,53 @@ function App() {
         <h2 className="book-title" style={{ fontSize: '3rem', textAlign: 'center', marginBottom: '10px' }}>Dramatis Personae</h2>
         <p style={{ textAlign: 'center', fontFamily: 'Spectral', fontStyle: 'italic', color: '#5d2e0a', marginBottom: '30px', fontSize: '1.2rem' }}>The principal figures of the great epic Mahabharata</p>
         
-        <div className="characters-view">
-          {GITA_CHARACTERS_INFO.map((char) => (
-            <div key={char.id} className="character-card">
-              <div className="character-card-inner">
-                <div className="character-card-front">
-                  <img src={char.image} alt={char.name} />
-                  <div className="character-name-overlay">{char.name}</div>
+        <div className="characters-master-detail-view">
+          <div className="characters-sidebar">
+            {GITA_CHARACTERS_INFO.map((char) => (
+              <div 
+                key={char.id} 
+                className={`character-sidebar-item ${selectedCharacter.id === char.id ? 'active' : ''}`}
+                onClick={() => setSelectedCharacter(char)}
+              >
+                <img src={char.image} alt={char.name} className="sidebar-avatar" />
+                <span className="sidebar-name">{char.name}</span>
+              </div>
+            ))}
+          </div>
+          
+          <div className="character-detail-area" key={selectedCharacter.id}>
+            <div className="character-detail-portrait-wrapper">
+              <img src={selectedCharacter.image} alt={selectedCharacter.name} className="character-detail-portrait" />
+              <div className="character-detail-gradient"></div>
+            </div>
+            
+            <div className="character-detail-content">
+              <h3 className="detail-name">{selectedCharacter.name}</h3>
+              <p className="detail-role">{selectedCharacter.role}</p>
+              
+              <div className="detail-section">
+                <p className="detail-description">{selectedCharacter.description}</p>
+              </div>
+              
+              <div className="detail-section highlight-section">
+                <h4 className="detail-heading">Spiritual Significance</h4>
+                <p className="detail-text">{selectedCharacter.spiritualSignificance}</p>
+              </div>
+              
+              <div className="detail-section flex-section">
+                <div className="traits-box">
+                  <h4 className="detail-heading">Key Attributes</h4>
+                  <ul className="traits-list">
+                    {selectedCharacter.traits.map((trait, i) => <li key={i}>{trait}</li>)}
+                  </ul>
                 </div>
-                <div className="character-card-back">
-                  <h3 className="character-back-title">{char.name}</h3>
-                  <p className="character-back-role">{char.role}</p>
-                  <p className="character-back-desc">{char.description}</p>
+                <div className="chapter-box">
+                   <h4 className="detail-heading">Gita Presence</h4>
+                   <p className="detail-text">{selectedCharacter.chapter}</p>
                 </div>
               </div>
             </div>
-          ))}
+          </div>
         </div>
         
         <div className="book-controls" style={{ justifyContent: 'center', marginTop: '30px' }}>
@@ -663,8 +719,19 @@ function App() {
             </div>
           ) : data ? (
             <>
-              <div className="shloka-main">{data.slok}</div>
-              {data.transliteration && <p style={{ textAlign: 'center', fontStyle: 'italic', opacity: 0.7 }}>{data.transliteration}</p>}
+              <div className={`speaker-shloka-container ${isSpeaking ? 'is-speaking' : ''}`}>
+                {currentSpeaker && (
+                  <div className="speaker-avatar-wrapper">
+                    <div className="speaker-pulse-ring"></div>
+                    <img src={currentSpeaker.image} alt={currentSpeaker.name} className="speaker-avatar-img" />
+                    <div className="speaker-name-badge">{currentSpeaker.name} {isSpeaking && <span className="speaking-indicator"></span>}</div>
+                  </div>
+                )}
+                <div className="shloka-text-wrapper">
+                  <div className="shloka-main">{data.slok}</div>
+                  {data.transliteration && <p style={{ textAlign: 'center', fontStyle: 'italic', opacity: 0.7 }}>{data.transliteration}</p>}
+                </div>
+              </div>
               <div className="translation-box">
                 <h4>Translation ({language})</h4>
                 <p className="translation-text">
