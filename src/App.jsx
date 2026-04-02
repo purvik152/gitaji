@@ -356,12 +356,89 @@ function App() {
 
   // Renderers
   if (view === 'cover') return (
-    <div className="app-container">
-      <div ref={pageRef} className="book-wrapper cover-view">
-        <h1 className="book-title">Shreemad Bhagwad Gita</h1>
-        <p className="cover-author">The Divine Song of God by Sage Vedvyas</p>
-        <img src="/assets/krishna.png" className="cover-illustration" alt="Krishna" />
-        <button className="ornate-btn" onClick={openBook}>Open Divine Book</button>
+    <div className="cover-fullpage">
+      {/* Animated particles */}
+      <div className="cover-particles">
+        {Array.from({ length: 20 }).map((_, i) => (
+          <div key={i} className="particle" style={{
+            left: `${Math.random() * 100}%`,
+            animationDelay: `${Math.random() * 5}s`,
+            animationDuration: `${4 + Math.random() * 6}s`
+          }} />
+        ))}
+      </div>
+
+      {/* Background image layer */}
+      <div className="cover-bg-image" />
+
+      {/* Dark overlay */}
+      <div className="cover-overlay" />
+
+      {/* Left decorative side */}
+      <div className="cover-side cover-side-left">
+        <div className="cover-side-text">श्रीमद्भगवद्गीता</div>
+      </div>
+
+      {/* Right decorative side */}
+      <div className="cover-side cover-side-right">
+        <div className="cover-side-text">Bhagavad Gita</div>
+      </div>
+
+      {/* Main Content */}
+      <div className="cover-content" ref={pageRef}>
+
+        {/* Om symbol */}
+        <div className="cover-om">ॐ</div>
+
+        {/* Top decorative rule */}
+        <div className="cover-divider">
+          <span className="cover-divider-line" />
+          <span className="cover-divider-diamond">◈</span>
+          <span className="cover-divider-line" />
+        </div>
+
+        {/* Title block */}
+        <div className="cover-title-block">
+          <p className="cover-subtitle-top">श्रीमद्</p>
+          <h1 className="cover-main-title">Bhagavad Gita</h1>
+          <p className="cover-subtitle-top" style={{ letterSpacing: '6px', fontSize: '1rem' }}>भगवद्गीता</p>
+        </div>
+
+        {/* Bottom rule */}
+        <div className="cover-divider" style={{ marginTop: '10px' }}>
+          <span className="cover-divider-line" />
+          <span className="cover-divider-diamond">◈</span>
+          <span className="cover-divider-line" />
+        </div>
+
+        {/* Author line */}
+        <p className="cover-author-line">
+          The Eternal Song of the Divine · As told by Lord Krishna to Arjuna
+        </p>
+
+        {/* Verse count badge */}
+        <div className="cover-badge">
+          <span>18 Chapters</span>
+          <span className="badge-dot">•</span>
+          <span>700 Shlokas</span>
+          <span className="badge-dot">•</span>
+          <span>Sage Vedvyas</span>
+        </div>
+
+        {/* CTA Button */}
+        <button className="cover-open-btn" onClick={openBook} id="open-divine-book-btn">
+          <span className="btn-glow" />
+          <span className="btn-icon">📖</span>
+          <span>Open the Divine Book</span>
+        </button>
+
+        {/* Bottom Sanskrit quote */}
+        <p className="cover-quote">
+          "यदा यदा हि धर्मस्य ग्लानिर्भवति भारत"
+        </p>
+        <p className="cover-quote-translation">
+          "Whenever there is a decline in dharma, I shall arise." — Krishna, Ch. 4.7
+        </p>
       </div>
     </div>
   );
@@ -372,13 +449,16 @@ function App() {
         <div className="preface-view">
           <h2 className="book-title" style={{ fontSize: '2rem' }}>Gita Dhyanam</h2>
           {GITA_DHYANAM.map((v, i) => (
-            <div key={i} className="preface-verse">
-              <p className="sanskrit-invocation">{v.sanskrit}</p>
-              <p className="english-invocation">{v.english}</p>
-              <p className="english-invocation" style={{ color: '#3a6e2a', fontStyle: 'normal', fontSize: '1rem', marginTop: '8px' }}>
-                {v.gujarati}
-              </p>
-            </div>
+            <React.Fragment key={i}>
+              <div className="preface-verse">
+                <p className="sanskrit-invocation">{v.sanskrit}</p>
+                <p className="english-invocation">{v.english}</p>
+                <p className="english-invocation" style={{ color: '#3a6e2a', fontStyle: 'normal', fontSize: '1rem', marginTop: '8px' }}>
+                  {v.gujarati}
+                </p>
+              </div>
+              {i < GITA_DHYANAM.length - 1 && <div className="preface-divider" />}
+            </React.Fragment>
           ))}
           <button className="ornate-btn" onClick={() => navigate(() => setView('index'))}>Proceed to Chapters</button>
         </div>
@@ -432,7 +512,12 @@ function App() {
         </div>
 
         <div className="parchment-page verse-content">
-          {loading ? <div className="book-title">Preparing Divine Words...</div> : data ? (
+          {loading ? (
+            <div className="loading-lotus">
+              <span className="loading-lotus-icon">❁</span>
+              <span className="loading-lotus-text">Preparing Divine Words...</span>
+            </div>
+          ) : data ? (
             <>
               <div className="shloka-main">{data.slok}</div>
               {data.transliteration && <p style={{ textAlign: 'center', fontStyle: 'italic', opacity: 0.7 }}>{data.transliteration}</p>}
